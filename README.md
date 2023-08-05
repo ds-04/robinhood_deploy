@@ -56,6 +56,7 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 
 
 <br>
+
 ### Supported Vagrantbox
 
 | Vagrantbox (image)       | Supported here | \| OS Repo install       | \|  Sourceforge RPM download install   |  \| Git clone and compile | Comment                    | Known issues   |
