@@ -73,16 +73,17 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 
 ### Important notes:
 
-<li> The secondary disk in the ```Vagrantfile``` is 10GB (this can be changed). The ansible logic figures out wether this is ```/sda``` or ```/sdb``` and formats accordingly.
+<li> The secondary disk in the Vagrantfile is 10GB (this can be changed). The ansible logic determines if this is /sda or /sdb and formats accordingly.
 <li> It's this secondary disk that is mounted for Robinhood testing.
-<li> The secondary disk is formatted ```ext4``` as this is the quickest method accross the Vagrantboxes in the table seen (as some do not have XFS support on first instantiation and require package plus reboot).
+<li> The secondary disk is formatted ext4 as this is the quickest method accross the Vagrantboxes in the table seen (as some do not have XFS support on first instantiation and require package plus reboot).
 <li> The ansible role creates testfiles and scans. Edit accordingly...
-<li> ...You can for instance, test the ```+i``` immutable attribute by editing the file attribute.
+<li> ...You can for instance, test the +i immutable attribute by editing the file attribute.
 <br>
 <br>
 At the end of the ansible provision a summary message is printed.
 <br>
 <br>
+
 ### SUSE specific notes
 
 By default the Robinhood packages will be installed from <i>Zypper</i> OS repos. If you don't want that, set variable ```suse_zypper_robinhood_install: false```   (e.g. in ```vars/main.yml```) to compile.
