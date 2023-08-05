@@ -3,31 +3,31 @@
 # git/tree/vim etc. alias
 - ansible.builtin.include: misc_robinhood.yml
 
-- ansible.builtin.include: rhel7.yml
+- ansible.builtin.include: distros/rhel7.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_os_family == "RedHat"
    - ansible_distribution_major_version|int == 7
 
-- ansible.builtin.include: rhel8.yml
+- ansible.builtin.include: distros/rhel8.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_os_family == "RedHat"
    - ansible_distribution_major_version|int == 8
 
-- ansible.builtin.include: debian.yml
+- ansible.builtin.include: distros/debian.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_distribution_major_version|int == 12
    - ansible_distribution == "Debian"
 
-- ansible.builtin.include: ubuntu2204.yml
+- ansible.builtin.include: distros/ubuntu2204.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_distribution_major_version|int == 22
    - ansible_distribution == 'Ubuntu'
 
-- ansible.builtin.include: suse.yml
+- ansible.builtin.include: distros/suse.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_os_family == "Suse"
