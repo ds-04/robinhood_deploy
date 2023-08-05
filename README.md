@@ -44,7 +44,7 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 <br>
 
 ## Notes:
-
+<br>
 <li> The fastest way to get started is via one of the SUSE Vagrantboxes as then the package found in OS repos can be used - with no need for compilation.
 <li> Sometimes there is an issue with destroying the box (fix: try halt first or reboot main host if that fails).
 <br>
@@ -73,7 +73,7 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 <br>
 <br>
 
-### Important notes:
+### Further important notes:
 
 <li> The secondary disk in the Vagrantfile is 10GB (this can be changed). The ansible logic determines if this is /sda or /sdb and formats accordingly.
 <li> It's this secondary disk that is mounted for Robinhood testing.
