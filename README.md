@@ -78,7 +78,7 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 <li> The secondary disk in the Vagrantfile is 10GB (this can be changed). The ansible logic determines if this is /sda or /sdb and formats accordingly.
 <li> It's this secondary disk that is mounted for Robinhood testing.
 <li> The secondary disk is formatted ext4 as this is the quickest method accross the Vagrantboxes in the table seen (as some do not have XFS support on first instantiation and require package plus reboot).
-<li> The ansible role creates testfiles and scans. Edit accordingly...
+<li> The ansible role creates testfiles and scans. Edit accordingly... (the test_files.yml is in vars/)
 <li> ...You can for instance, test the +i immutable attribute by editing the file attribute.
 <br>
 <br>
