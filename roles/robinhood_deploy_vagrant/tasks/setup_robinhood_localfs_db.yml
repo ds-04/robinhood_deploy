@@ -77,7 +77,7 @@
       state: mounted
       path: "{{ rh_mountpoint }}"
 
-   - name: "Template out vagrant_test_template to /etc/robinhood.d/.dbpassword"
+   - name: "Template out /etc/robinhood.d/.dbpassword"
      ansible.builtin.template:
       src: dbpassword.j2
       dest: /etc/robinhood.d/.dbpassword
@@ -86,7 +86,7 @@
       mode: '0600'
       backup: true
 
-   - name: "Template out vagrant_test.conf and vagrant_test_policy.inc to /etc/robinhood.d/"
+   - name: "Template out vagrant_test.conf to /etc/robinhood.d/"
      ansible.builtin.template:
       src: "vagrant_test.conf.j2"
       dest: "/etc/robinhood.d/vagrant_test.conf"
@@ -96,7 +96,13 @@
       backup: true
      register: config_main
 
-   - name: "Template out vagrant_test.conf and vagrant_test_policy.inc to /etc/robinhood.d/"
+   # needed for optional but default fileclass loop in example policy
+   - name: Include only files matching test_files.yaml
+     ansible.builtin.include_vars:
+      dir: vars
+      files_matching: test_files.yml
+
+   - name: "Template out vagrant_test_policy.inc to /etc/robinhood.d/"
      ansible.builtin.template:
       src: "vagrant_test_policy.inc.j2"
       dest: "/etc/robinhood.d/vagrant_test_policy.inc"
