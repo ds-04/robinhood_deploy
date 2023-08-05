@@ -42,6 +42,7 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 <br>
 <br>
 <br>
+
 ## Notes:
 
 <li> The fastest way to get started is via one of the SUSE Vagrantboxes as then the package found in OS repos can be used - with no need for compilation.
