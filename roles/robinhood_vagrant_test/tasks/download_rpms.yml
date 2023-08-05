@@ -1,0 +1,64 @@
+---
+
+- block:
+
+   - name: "Make directory {{ rpm_download_location }}"
+     ansible.builtin.file:
+      state: directory
+      path: "{{ rpm_download_location }}"
+
+   - name: "ALL - Download Robinhood rpms version {{ download_version }}-{{ download_release }}"
+     ansible.builtin.get_url:
+      url: "{{ item.value.url }}"
+      dest: "{{ item.value.dest }}"
+     loop: "{{ lookup('dict', All_download_rpms ) }}"
+     when:
+      - robinhood_download_rpm_install | bool
+
+   # el7
+   - name: "RH7 - Download Robinhood rpm robinhood-posix-{{ download_version }}-{{ download_release }}"
+     ansible.builtin.get_url:
+      url: "{{ item.value.url }}"
+      dest: "{{ item.value.dest }}"
+     loop: "{{ lookup('dict', RedHat_7_download_rpms, wantlist=True ) }}"
+     when:
+      - robinhood_download_rpm_install | bool
+      - ansible_os_family == "RedHat"
+      - ansible_distribution_major_version|int == 7
+
+   # el8
+   - name: "RH8 - Download Robinhood rpm robinhood-posix-{{ download_version }}-{{ download_release }}"
+     ansible.builtin.get_url:
+      url: "{{ item.value.url }}"
+      dest: "{{ item.value.dest }}"
+     loop: "{{ lookup('dict', RedHat_8_download_rpms, wantlist=True ) }}"
+     when:
+      - robinhood_download_rpm_install | bool
+      - ansible_os_family == "RedHat" or ansible_os_family == 'Debian'
+
+   - name: "Find download rpms in {{ rpm_download_location }}"
+     ansible.builtin.find:
+      paths: "{{ rpm_download_location }}"
+      file_type: file
+      recurse: false
+      patterns: '*.rpm'
+     register: find_download_rpms
+
+   - name: Install local robinhood rpms
+     ansible.builtin.dnf:
+      name: "{{ item.path }}"
+      disable_gpg_check: true
+     loop: "{{ find_download_rpms.files }}"
+     when:
+      - ansible_os_family == 'RedHat'
+
+   # Debian alien
+   - name: ALIEN - Install local robinhood rpms
+     ansible.builtin.command: "alien -i {{ item.path }}"
+     loop: "{{ find_download_rpms.files }}"
+     when:
+      - ansible_os_family == 'Debian'
+
+  become: true
+
+...

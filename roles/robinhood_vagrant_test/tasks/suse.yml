@@ -1,0 +1,27 @@
+---
+- block:
+
+   - name: SUSE Update all packages
+     ansible.builtin.zypper:
+      name: '*'
+      state: latest
+     when: suse_zypper_update | bool
+
+   - name: "SUSE - Install robinhood dependencies"
+     ansible.builtin.zypper:
+      name: "{{ suse_depends }}"
+      state: present
+      update_cache: true
+
+   - name: "SUSE - Install robinhood packages (zypper OS repos)"
+     ansible.builtin.zypper:
+      name: "{{ suse_robinhood }}"
+     when: suse_zypper_robinhood_install | bool
+
+   - name: "SUSE - Install packages for compilation"
+     ansible.builtin.zypper:
+      name: "{{ suse_compile }}"
+     when: not suse_zypper_robinhood_install | bool
+
+  become: true
+...

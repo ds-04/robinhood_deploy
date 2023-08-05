@@ -1,0 +1,86 @@
+---
+
+- block:
+
+   - name: "RHEL8 - Install epel-release"
+     ansible.builtin.dnf:
+      name: epel-release
+      state: present
+      update_cache: true
+
+   - name: "RHEL8 - Install robinhood dependencies"
+     ansible.builtin.dnf:
+      name: "{{ rhel_depends }}"
+      state: present
+
+   - name: "RHEL8 - **EPEL source** Install robinhood dependencies"
+     ansible.builtin.dnf:
+      name: "{{ rhel_epel_depends }}"
+      state: present
+
+   - name: RHEL8 - Install robinhood dependencies
+     ansible.builtin.dnf:
+      name: "{{ rhel8_depends }}"
+      state: present
+
+   - name: Adding Remi repo pgp keys
+     ansible.builtin.get_url:
+      url: https://rpms.remirepo.net/enterprise/8/RPM-GPG-KEY-remi
+      dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el8
+
+   - name: Add remi repo
+     yum_repository:
+      name: remi
+      description: Remi repo for Enterprise Linux 8
+      mirrorlist: http://cdn.remirepo.net/enterprise/8/remi/$basearch/mirror
+      enabled: true
+      gpgcheck: true
+      repo_gpgcheck: true
+      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el8
+
+   - name: Add remi-modular repo
+     yum_repository:
+      name: remi-modular
+      description: Remi's Modular repository for Enterprise Linux 8 - $basearch
+      mirrorlist: http://cdn.remirepo.net/enterprise/8/modular/$basearch/mirror
+      enabled: true
+      gpgcheck: true
+      repo_gpgcheck: true
+      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el8
+
+   - name: Adding remi-safe repo
+     yum_repository:
+      name: remi-safe
+      description: remi safe repository for Enterprise Linux 8 - $basearch
+      mirrorlist: http://cdn.remirepo.net/enterprise/8/modular/$basearch/mirror
+      enabled: true
+      gpgcheck: true
+      repo_gpgcheck: true
+      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el8
+
+   - name: Enable php 8.0 remi repo
+     ansible.builtin.shell: dnf module enable php:remi-8.0 -y
+
+   - name: Installing php 8.0
+     ansible.builtin.dnf:
+      name:
+       - php-cli
+       - php-fpm
+       - php-pdo
+       - php-json
+       - php-mysqlnd
+       - php-intl
+       - php-soap
+       - php-mbstring
+       - php-curl
+       - php-xml
+       - php-bcmath
+       - php-xmlrpc
+       - php-gd
+       - php-zip
+       - php-sodium
+      state: present
+
+  become: true
+
+...

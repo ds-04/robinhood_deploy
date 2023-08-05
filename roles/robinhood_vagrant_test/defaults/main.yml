@@ -1,0 +1,237 @@
+---
+
+# docs
+doc_url_main: 'https://github.com/cea-hpc/robinhood/wiki/robinhood_v3_admin_doc'
+doc_url_Fileclasses: 'https://github.com/cea-hpc/robinhood/wiki/robinhood_v3_admin_doc#user-content-Fileclasses'
+doc_url_Policies: 'https://github.com/cea-hpc/robinhood/wiki/robinhood_v3_admin_doc#user-content-Policies'
+
+
+
+### *** PACKAGE INSTALL *** ----------------------------------------------------------------------------------
+
+#  !!! ********** ALL OS TYPES (NOT SUSE) - DOWNLOAD AND INSTALL RPM - FALSE FOR COMPILE ************** !!!
+robinhood_download_rpm_install: true
+
+# SUSE specific
+# default use zypper package don't compile
+suse_zypper_robinhood_install: true
+# do a full zypper update
+suse_zypper_update: false
+
+### *** COMPILE *** ------------------------------------------------------------------------------------------
+
+# git repo
+robinhood_git_repo: 'https://github.com/cea-hpc/robinhood.git'
+
+
+# where the git checkout will be
+clone_dest: '/root/robinhood_git'
+# where the rpms will get created
+rpms_dir: "{{ clone_dest }}/rpms/RPMS/x86_64"
+
+configure_command: './configure --disable-lustre'
+
+
+### *** DATABASE *** -----------------------------------------------------------------------------------------
+
+database_name: 'robinhood'
+robinhood_passwd: 'robinhood'
+db_admin_passwd: 'robinhood'
+
+create_db_command: "create_db {{ database_name }} localhost {{ robinhood_passwd }} {{ db_admin_passwd }}"
+
+
+### *** TEST FS *** ------------------------------------------------------------------------------------------
+
+# type of test filesystem
+test_fs: 'ext4'
+# mountpoint - needs to be at top-level as recursion is false on ansible dir creation
+rh_mountpoint: '/robinhood_testfs'
+
+
+### *** OTHER *** --------------------------------------------------------------------------------------------
+
+
+# Debian/SUSE ll alias
+ll_alias: true
+
+# nb_threads - conservative here
+thread_count: 4
+
+# robinhood --scan --once --detach
+run_scan_on_ansible_run: true
+# create test files via ansible
+ansible_create_test_files: true
+# run a report
+run_rbh_report_on_ansible_run: true
+
+test_policy_name: 'cleanup'
+
+
+# ----------------------- DOWNLOADED RPMS --------------------------------------------------------------------
+
+
+download_version: 3.1.6
+download_release: 1
+rpm_download_location: '/root/robinhood_download_rpms_{{ download_version }}-{{ download_release }}'
+
+RedHat_7_download_rpms:
+  robinhood-posix:
+    url: "https://sourceforge.net/projects/robinhood/files/robinhood/{{ download_version }}/RPMS/posix_fs/robinhood-posix-{{ download_version }}-{{ download_release }}.el7.x86_64.rpm/download"
+    checksum: "sha256:94b039609e298869297c0289658e63f995052dc806efdadbbcf9d55ee038899a"
+    dest: "{{ rpm_download_location }}/robinhood-posix.rpm"
+
+RedHat_8_download_rpms:
+  robinhood-posix:
+    url: "https://sourceforge.net/projects/robinhood/files/robinhood/{{ download_version }}/RPMS/posix_fs/robinhood-posix-{{ download_version }}-{{ download_release }}.el8.x86_64.rpm/download"
+    checksum: "sha256:fb0a24bd6caac6379bcf592ad0c2c24696599a31955d5d3e72bb35ca5ee066cc"
+    dest: "{{ rpm_download_location }}/robinhood-posix.rpm"
+
+All_download_rpms:
+  robinhood-adm:
+    url: "https://sourceforge.net/projects/robinhood/files/robinhood/{{ download_version }}/RPMS/robinhood-adm-{{ download_version }}-{{ download_release }}.x86_64.rpm/download"
+    checksum: "sha256:09adcd00dcb382885cb7de18a697240d77ab68f7f360be36bf516cef789736ef"
+    dest: "{{ rpm_download_location }}/robinhood-adm.rpm"
+  robinhood-webgui:
+    url: "https://sourceforge.net/projects/robinhood/files/robinhood/{{ download_version }}/RPMS/robinhood-webgui-{{ download_version }}-{{ download_release }}.x86_64.rpm/download"
+    checksum: "sha256:06148ff0a39565d5865248bef8d29d5c9f771efcee363ff6f1eab342d67a70a6"
+    dest: "{{ rpm_download_location }}/robinhood-webgui.rpm"
+
+
+# ----------------------- DEPS AND SOURCE --------------------------------------------------------------------
+
+# needs moved, need git sooner
+common_pkg:
+  - git
+  - tree
+  - vim
+
+rhel_depends:
+  - autoconf
+  - automake
+  - bc
+  - glib2-devel 
+  - libattr-devel
+  - libtool
+  - mailx
+  - mariadb-server
+  - mariadb-devel
+  - rpm-build
+  - zlib-devel
+
+rhel_epel_depends:
+  - jemalloc
+  - jemalloc-devel
+
+rhel7_depends:
+  - MySQL-python #for ansible
+  - php-mysql
+  - php-xml
+  - php
+  - php-pdo
+  - php-gd
+
+rhel8_depends:
+  - byacc
+  - make
+  - python3-mysql
+
+debian_depends:
+  - alien
+  - apache2
+  - bc
+  - build-essential
+  - byacc
+  - libjemalloc2
+  - libjemalloc-dev
+  - libattr1-dev
+  - libtool
+  - libglib2.0-dev
+  - libmariadb-dev
+  - libmariadb-dev-compat
+  - mailutils
+  - mariadb-client
+  - mariadb-server
+  - manpages-dev
+  - rpm
+
+ubuntu2204_depends:
+  - alien
+  - apache2
+  - bc
+  - build-essential
+  - byacc
+  - libjemalloc2
+  - libjemalloc-dev
+  - libattr1-dev
+  - libtool
+  - libglib2.0-dev
+  - libmariadb-dev
+  - libmariadb-dev-compat
+  - mailutils
+  - mariadb-client
+  - mariadb-server
+  - manpages-dev
+  - rpm
+
+# needed to compile - when suse_zypper_robinhood_install is set to false
+suse_compile:
+  - autoconf
+  - automake
+  - gcc
+  - glib2-devel
+  - jemalloc
+  - jemalloc-devel
+  - libattr-devel
+  - libmariadb-devel
+  - libtool
+  - make
+  - rpm-build
+  - zlib-devel
+
+# always installed
+suse_depends:
+  - acl
+  - e2fsprogs
+  - mariadb
+  - xfsprogs
+
+# suse_zypper_robinhood_install is true (default)
+suse_robinhood:
+  - robinhood
+  - robinhood-tools
+  - robinhood-webgui
+
+# ----------------------- TEST FILES -------------------------------------------------------------------------
+
+# N.B. YYYYMMDDHHMM.SS for modification_time
+ansible_created_test_files:
+    rh_test_file1:
+      file_number: 1
+      path: "{{ rh_mountpoint}}/rh_test_file1"
+      modification_time: now
+      state: touch
+      size: 1G
+      attributes: ''
+    rh_test_file2:
+      file_number: 2
+      path: "{{ rh_mountpoint}}/rh_test_file2"
+      modification_time: 200001011200.00
+      state: touch
+      size: 500M
+      attributes: '+i'
+    rh_test_file3:
+      file_number: 3
+      path: "{{ rh_mountpoint}}/rh_test_file3"
+      modification_time: 202301011200.00
+      state: touch
+      size: 1M
+      attributes: ''
+    rh_test_file4:
+      file_number: 4
+      path: "{{ rh_mountpoint}}/rh_test_file4"
+      modification_time: now
+      state: touch
+      size: 1K
+      attributes: ''
+...

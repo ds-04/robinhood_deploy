@@ -1,0 +1,28 @@
+---
+
+- block:
+
+   - name: "RHEL7 - Install epel-release"
+     ansible.builtin.yum:
+      name: epel-release
+      state: present
+      update_cache: true
+
+   - name: "RHEL7 - Install robinhood dependencies"
+     ansible.builtin.yum:
+      name: "{{ rhel_depends }}"
+      state: present
+
+   - name: "RHEL7 - **EPEL source** Install robinhood dependencies"
+     ansible.builtin.yum:
+      name: "{{ rhel_epel_depends }}"
+      state: present
+
+   - name: RHEL7 - Install robinhood dependencies
+     ansible.builtin.yum:
+      name: "{{ rhel7_depends }}"
+      state: present
+
+  become: true
+
+...

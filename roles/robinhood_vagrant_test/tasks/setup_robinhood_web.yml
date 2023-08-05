@@ -1,0 +1,75 @@
+---
+
+- block:
+
+   # check if httpd, apache2 present in services
+   - name: Populate service facts to find httpd, apache2
+     ansible.builtin.service_facts:
+
+   - name: "Template out /var/www/robinhood/config.php"
+     ansible.builtin.template:
+      src: "config.php.j2"
+      dest: "/var/www/robinhood/config.php"
+      owner: root
+      group: apache
+      mode: '0640'
+      backup: true
+     register: httpd_config_php
+     when:
+      - ansible_os_family != "Suse"
+      - ansible_facts.services['httpd.service'] is defined
+
+   - name: "Template out /var/lib/robinhood/config.php"
+     ansible.builtin.template:
+      src: "config.php.j2"
+      dest: "/var/lib/robinhood/config.php"
+      owner: wwwrun
+      group: www
+      mode: '0640'
+      backup: true
+     register: suse_zypper_apache2_config_php
+     when:
+      - ansible_os_family == "Suse"
+      - ansible_facts.services['apache2.service'] is defined
+
+   - name: Make sure httpd service unit is restarted (if php config updated)
+     ansible.builtin.systemd:
+      state: restarted
+      enabled: true
+      name: httpd
+     when:
+      - httpd_config_php.changed
+      - ansible_os_family != "Suse"
+      - ansible_facts.services['httpd.service'] is defined
+
+   - name: Always make sure httpd service unit is running
+     ansible.builtin.systemd:
+      state: started
+      enabled: true
+      name: httpd
+     when:
+      - ansible_os_family != "Suse"
+      - ansible_facts.services['httpd.service'] is defined
+
+   - name: Make sure apache2 service unit is restarted (if php config updated)
+     ansible.builtin.systemd:
+      state: restarted
+      enabled: true
+      name: apache2
+     when:
+      - suse_zypper_apache2_config_php.changed
+      - ansible_os_family == "Suse"
+      - ansible_facts.services['apache2.service'] is defined
+
+   - name: Make sure apache2 service unit is running
+     ansible.builtin.systemd:
+      state: started
+      enabled: true
+      name: apache2
+     when:
+      - ansible_os_family == "Suse"
+      - ansible_facts.services['apache2.service'] is defined
+
+  become: true
+
+...

@@ -1,0 +1,118 @@
+---
+
+- block:
+
+   - name: Make sure mariadb service unit is running
+     ansible.builtin.systemd:
+      state: started
+      enabled: true
+      name: mariadb
+
+   - name: Check if mariadb root password is not set
+     shell: mysql -u root -p'{{ db_admin_passwd }}' -e "quit"
+     changed_when: false
+     ignore_errors: true
+     register: admindb_pwd_check
+
+   - name: Set root's mariadb password
+     ansible.builtin.mysql_user:
+      name: root
+      host: localhost
+      state: present
+      update_password: always
+      password: "{{ db_admin_passwd }}"
+     when: admindb_pwd_check.rc != 0
+
+   # check for robinhood db
+   - name: "Check if database named {{ database_name }} has been created"
+     shell: mysql -u root -p'{{ db_admin_passwd }}' -e "use {{ database_name }}"
+     changed_when: false
+     ignore_errors: true
+     register: created_db_check
+
+   # create robinhood db if not found
+   - name: "Command - rbh-config {{ create_db_command }}"
+     ansible.builtin.shell:
+      cmd: "rbh-config {{ create_db_command }}"
+     when: created_db_check.rc != 0
+
+   - name: "Command findmnt /dev/sda1"
+     ansible.builtin.shell:
+      cmd: findmnt /dev/sda1
+     ignore_errors: true
+     register: findmnt_sda1
+
+   # if we dont find anything for sda1, we will assume we can use sda
+   - name: "Set target device based on findmnt_sda1 (sda)"
+     ansible.builtin.set_fact:
+      target_device: '/dev/sda'
+     when: findmnt_sda1.rc != 0
+
+   # otherwise try to use sdb
+   - name: "Set target device based on findmnt_sda1 (sdb)"
+     ansible.builtin.set_fact:
+      target_device: '/dev/sdb'
+     when: findmnt_sda1.rc == 0
+
+   - name: "Create an {{ test_fs }} filesystem on {{ target_device }}"
+     community.general.filesystem:
+      fstype: "{{ test_fs }}"
+      dev: "{{ target_device }}"
+      force: false
+      state: present
+
+   - name: "Make directory {{ rh_mountpoint }} with 0777"
+     ansible.builtin.file:
+      state: directory
+      path: "{{ rh_mountpoint }}"
+      owner: root
+      group: root
+      recurse: false
+      mode: '0777'
+
+   - name: "Mount [ephemeral] the {{ test_fs }} {{ target_device }} at {{ rh_mountpoint }}"
+     ansible.posix.mount:
+      fstype: "{{ test_fs }}"
+      src: "{{ target_device }}"
+      state: mounted
+      path: "{{ rh_mountpoint }}"
+
+   - name: "Template out vagrant_test_template to /etc/robinhood.d/.dbpassword"
+     ansible.builtin.template:
+      src: dbpassword.j2
+      dest: /etc/robinhood.d/.dbpassword
+      owner: root
+      group: root
+      mode: '0600'
+      backup: true
+
+   - name: "Template out vagrant_test.conf and vagrant_test_policy.inc to /etc/robinhood.d/"
+     ansible.builtin.template:
+      src: "vagrant_test.conf.j2"
+      dest: "/etc/robinhood.d/vagrant_test.conf"
+      owner: root
+      group: root
+      mode: '0700'
+      backup: true
+     register: config_main
+
+   - name: "Template out vagrant_test.conf and vagrant_test_policy.inc to /etc/robinhood.d/"
+     ansible.builtin.template:
+      src: "vagrant_test_policy.inc.j2"
+      dest: "/etc/robinhood.d/vagrant_test_policy.inc"
+      owner: root
+      group: root
+      mode: '0700'
+      backup: true
+     register: config_policy
+
+   - name: Make sure robinhood service unit is restarted (if config updated)
+     ansible.builtin.systemd:
+      state: restarted
+      enabled: true
+      name: robinhood
+     when: config_main.changed or config_policy.changed
+
+  become: true
+
+...

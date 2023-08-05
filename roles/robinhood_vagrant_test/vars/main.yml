@@ -1,0 +1,4 @@
+---
+# override here
+#suse_zypper_robinhood_install: false
+...

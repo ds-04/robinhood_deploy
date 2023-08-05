@@ -1,0 +1,66 @@
+---
+
+- block:
+
+   # ignore errors, though these warrant investigation
+   - name: "Create some test files in {{ rh_mountpoint }} - ignore errors, though these warrant investigation"
+     community.general.filesize:
+      path: "{{ item.value.path }}"
+      size: "{{ item.value.size }}"
+      attributes: "{{ item.value.attributes }}"
+     loop: "{{ lookup('dict', ansible_created_test_files) }}"
+     ignore_errors: true
+     when: ansible_create_test_files | bool
+
+   # ignore errors a test file may be immutable for instance
+   - name: "Enforce properties on test files in {{ rh_mountpoint }} IGNORING ERRORS"
+     ansible.builtin.file:
+      mode: '0777'
+      path: "{{ item.value.path }}"
+      state: "{{ item.value.state }}"
+      modification_time: "{{ item.value.modification_time }}"
+     loop: "{{ lookup('dict', ansible_created_test_files) }}"
+     ignore_errors: true
+     when: ansible_create_test_files | bool
+
+   # do a scan once, if requested
+   - name: "Command - robinhood --scan --once; ***this may take some time...***"
+     ansible.builtin.shell:
+      cmd: "robinhood --scan --once"
+     when: run_scan_on_ansible_run | bool
+
+   # run rbh-report, if requested
+   - name: "Commands - run df and rbh-report commands"
+     ansible.builtin.shell:
+      cmd: "{{ item }}"
+     when: run_rbh_report_on_ansible_run | bool
+     register: rbh_report_out
+     loop:
+      - "df -hT {{ rh_mountpoint }}"
+      - "rbh-report -a"
+      - "rbh-report --classinfo"
+
+   - name: "Show summary commands outputs"
+     ansible.builtin.debug:
+      msg: "{{ item.stdout_lines }}"
+     loop: "{{ rbh_report_out.results }}"
+
+   - name: "Show hints"
+     ansible.builtin.debug:
+      msg:
+       - "Run scan with:"
+       - "robinhood --scan --once OR robinhood --scan --once --detach"
+       - "-----------------------"
+       - "Run the test policy named {{ test_policy_name }} with:"
+       - "robinhood --run={{ test_policy_name }}"
+       - "-----------------------"
+       - "Other commands:"
+       - "rbh-report"
+       - "rbh-du"
+       - "rbh-find"
+       - "-----------------------"
+       - "Web interface is seen at http://{{ansible_ssh_host}}/robinhood/#"
+
+  become: true
+
+...

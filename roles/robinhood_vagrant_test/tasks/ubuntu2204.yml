@@ -1,0 +1,13 @@
+---
+
+- block:
+
+   - name: "UBUNTU2204 - Install robinhood dependencies"
+     ansible.builtin.apt:
+      name: "{{ ubuntu2204_depends }}"
+      state: present
+      update_cache: true
+
+  become: true
+
+...

@@ -1,0 +1,121 @@
+# -*- mode: c; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+# vim:expandtab:shiftwidth=4:tabstop=4:
+
+
+### DOC URLS 
+
+# {{ doc_url_Fileclasses }}
+
+# {{ doc_url_Policies }}
+
+
+
+#### policy definitions ####
+
+# includes go here
+
+define_policy {{ test_policy_name }} {
+     status_manager = basic;
+     scope { type == file }
+     default_action = common.log;
+     default_lru_sort_attr = none;
+}
+
+#### fileclass definitions ####
+
+FileClass even_files {
+    definition { type == file and name == "*[02468]" }
+    # only for policy matching, not to display in reports
+    report = no;
+}
+
+FileClass odd_files {
+    definition { type == file and name == "*[13579]" }
+    report = no;
+}
+
+# fileclasses to display in reports (can still be used in policies)
+FileClass empty_files {
+    definition { type == file and size == 0 }
+    # report = yes (default)
+}
+FileClass small_files {
+    definition { type == file and size > 0 and size <= 16MB }
+    # report = yes (default)
+}
+FileClass std_files {
+    definition { type == file and size > 16MB and size <= 1GB }
+}
+FileClass big_files {
+    definition { type == file and size > 1GB }
+}
+
+FileClass largedir {
+    definition { type == directory and dircount > 10000 }
+}
+
+
+
+
+
+# TESTING EXAMPLES based on name (by hand)
+
+#FileClass f1 {
+#    definition { type == file and name == "rh_test_file1" }
+#}
+
+# TESTING EXAMPLES based on name - generated from items in the ansible dictionary found in defaults
+{% for key, value in ansible_created_test_files.items() %}
+FileClass f{{ value.file_number }} {
+    definition { type == file and name == "{{ key }}" }
+}
+{% endfor %}
+
+
+
+
+
+
+#### Deleting old unused files #######
+
+{{ test_policy_name }}_rules {
+    #ignore
+    #ignore { last_mod < 1d }
+    ignore_fileclass = empty_files;
+
+    rule clean_f {
+        #target_fileclass = f2;
+        target_fileclass = small_files;
+        target_fileclass = std_files;
+        target_fileclass = big_files;
+        #target_fileclass = largedir;
+        condition { last_mod > 1d }
+        action = common.unlink;
+    }
+
+    # DEFAULT rule for other entries
+    rule default {
+        condition { last_mod < 1d }
+        action = common.log;
+    }
+}
+
+{{ test_policy_name }}_parameters {
+    lru_sort_attr = none;
+}
+
+{{ test_policy_name }}_trigger {
+    trigger_on = periodic;
+    check_interval = 1m;
+}
+
+# OTHER
+# clean when inode count > 100M
+#{{ test_policy_name }}_trigger {
+#    trigger_on = global_usage;
+#    high_threshold_cnt = 100M;
+#    low_threshold_cnt  = 100M;
+#    check_interval     = 5min;
+#}
+
+########### end of policy rules ############

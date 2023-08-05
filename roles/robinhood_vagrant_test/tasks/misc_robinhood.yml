@@ -1,0 +1,50 @@
+---
+
+- block:
+
+   - name: DEBIAN/SUSE Add ll alias to /root/.bashrc
+     ansible.builtin.lineinfile:
+      dest: "/root/.bashrc"
+      create: true
+      line: 'alias ll="ls -l"'
+     when:
+      - ll_alias | bool
+      - ansible_os_family == "Suse" or ansible_distribution == "Debian"
+
+   - name: APT with cache update - Install common packages (including git)
+     ansible.builtin.apt:
+      name: "{{ common_pkg }}"
+      state: present
+      update_cache: true
+     when: ansible_os_family == "Debian"
+
+   - name: Install common packages (including git)
+     ansible.builtin.package:
+      name: "{{ common_pkg }}"
+      state: present
+     when: ansible_os_family != "Debian"
+
+  # unfinished hack for alien rpm install
+   - name: HACK - Add the user apache with www-data as group
+     ansible.builtin.user:
+      name: apache
+      system: true
+      shell: /usr/sbin/nologin
+      groups: www-data
+     when: ansible_os_family == "Debian"
+
+  # unfinished hack for alien rpm install
+   - name: "HACK - Make directory /var/www/robinhood"
+     ansible.builtin.file:
+      state: directory
+      path: /var/www/robinhood
+      owner: apache
+     when: ansible_os_family == "Debian"
+     loop:
+      - /var/www/robinhood
+      - /var/www/robinhood/api
+      - /var/www/robinhood/images
+
+  become: true
+
+...

@@ -1,0 +1,93 @@
+---
+
+- block:
+
+   - name: "Check for created rpms in {{ rpms_dir }}"
+     ansible.builtin.find:
+      paths: "{{ rpms_dir }}"
+      file_type: file
+      recurse: false
+      patterns: '*.rpm'
+     register: initial_find_rpms
+     when:
+      - (ansible_os_family != "Suse") or (not suse_zypper_robinhood_install | bool)
+
+   - name: "Make directory {{ clone_dest }}"
+     ansible.builtin.file:
+      state: directory
+      path: "{{ clone_dest }}"
+     when:
+      - (ansible_os_family != "Suse") or (not suse_zypper_robinhood_install | bool)
+
+   # this later gets modified because of other tasks, so skip if we find rpms
+   - name: "Git clone robinhood from {{ robinhood_git_repo }}"
+     ansible.builtin.git:
+      repo: "{{ robinhood_git_repo }}"
+      dest: "{{ clone_dest }}"
+     when:
+      - initial_find_rpms.matched == 0
+      - (ansible_os_family != "Suse") or (not suse_zypper_robinhood_install | bool)
+
+   - name: "DEBIAN/UBUNTU Command sh autoupdate"
+     ansible.builtin.shell:
+      cmd: 'autoupdate'
+      chdir: "{{ clone_dest  }}"
+     when:
+      - initial_find_rpms.matched == 0
+      - ansible_os_family == "Debian"
+
+   - name: "Command sh autogen.sh (with ignore_errors)"
+     ansible.builtin.shell:
+      cmd: 'sh autogen.sh'
+      chdir: "{{ clone_dest  }}"
+     ignore_errors: true
+     when:
+      - initial_find_rpms.matched == 0
+      - (ansible_os_family != "Suse") or (not suse_zypper_robinhood_install | bool)
+
+   - name: "Command ./configure"
+     ansible.builtin.shell:
+      cmd: "{{ configure_command }}"
+      chdir: "{{ clone_dest }}"
+     when:
+      - initial_find_rpms.matched == 0
+      - (ansible_os_family != "Suse") or (not suse_zypper_robinhood_install | bool)
+
+   - name: Command make rpm
+     ansible.builtin.shell:
+      cmd: 'make rpm'
+      chdir: "{{ clone_dest  }}"
+     when:
+      - initial_find_rpms.matched == 0
+      - (ansible_os_family != "Suse") or (not suse_zypper_robinhood_install | bool)
+
+   - name: "Find created rpms in {{ rpms_dir }}"
+     ansible.builtin.find:
+      paths: "{{ rpms_dir }}"
+      file_type: file
+      recurse: false
+      patterns: '*.rpm'
+     register: find_created_rpms
+     when:
+      - (ansible_os_family != "Suse") or (not suse_zypper_robinhood_install | bool)
+
+   - name: RHEL7 - Install local robinhood rpms
+     ansible.builtin.yum:
+      name: "{{ item.path }}"
+     loop: "{{ find_created_rpms.files }}"
+     when:
+      - ansible_os_family == 'RedHat'
+      - ansible_distribution_major_version|int == 7
+
+   - name: RHEL8 - Install local robinhood rpms
+     ansible.builtin.dnf:
+      name: "{{ item.path }}"
+      disable_gpg_check: true
+     loop: "{{ find_created_rpms.files }}"
+     when:
+      - ansible_os_family == 'RedHat'
+      - ansible_distribution_major_version|int == 8
+
+  become: true
+
+...
