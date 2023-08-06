@@ -60,15 +60,16 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 
 ### Supported Vagrantbox
 
-| Vagrantbox (image)       | Supported here | \| OS Repo install       | \|  Sourceforge RPM download install   |  \| Git clone and compile | Comment                    | Known issues   |
-| :-------------           | :---:          | :---:                 |  :---:                     | :---:              | :-------------:                  | :------------- |
-| <b>Almalinux 8x</b>      | &check;        | &cross; No            |  &check; Yes            | &check;            |    8.7 tested, Remi-EL8 php8     |    |
-| Centos 7x                | &check;        | &cross; No            |  &check; Yes            | &check;            |    7.8 tested                    |    |
-| <b>SUSE Leap 15.4</b>           | &check;        | &check; Zypper        |  N/A                       | &check;            | use of xfs will require reboot   |    |
-| <b>SUSE Tumbleweed 20230504</b> | &check;        | &check; Zypper        |  N/A                       | &check;            | use of xfs will require reboot   |    |
-| ------------------------ | -------------- | --------------        |                            | --------------     | --------------                   | -------------- |
-| Debian 12                | &cross;        | &cross;               |  Not yet working via ```alien```                 | Not working yet                |                                  | make   |
-| Ubuntu 22.04             | &cross;        | &cross;               |  Not yet working via ```alien```                 | Not working yet                |                                  | make   |
+| Vagrantbox (image)       | Supported here | \| OS Repo install       | \|  Sourceforge RPM download install   |  \| Git clone and compile             | Comment   | Known issues   |
+| :-------------           | :---:          | :---:                 |  :---:                     | :---:            | :-------------:                   | :------------- |
+| <b>Almalinux 8x</b>      | &check;        | &cross; No            |  &check; Yes            | &check;             |    8.7 tested                     |    |
+| Centos 7x                | &check;        | &cross; No            |  &check; Yes            | &check;             |    7.8 tested                     |    |
+| <b>Rocky 8x              | &check;        | &cross; No            |  &check; Yes            | &check;             |    8.7 tested                     |    |
+| <b>SUSE Leap 15.4</b>           | &check; | &check; Zypper        |  N/A                    | &check;             | use of xfs will require reboot    |    |
+| <b>SUSE Tumbleweed 20230504</b> | &check; | &check; Zypper        |  N/A                    | &check;             | use of xfs will require reboot    |    |
+| ------------------------ | -------------- | --------------        |                         | --------------      | --------------                    | -------------- |
+| Debian 12                | &cross;        | &cross;               |  Not yet working via ```alien```              | Not working yet                   |               | make   |
+| Ubuntu 22.04             | &cross;        | &cross;               |  Not yet working via ```alien```              | Not working yet                   |               | make   |
 
 <br>
 <br>
@@ -80,11 +81,23 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 <li> The secondary disk is formatted ext4 as this is the quickest method accross the Vagrantboxes in the table seen (as some do not have XFS support on first instantiation and require package plus reboot).
 <li> The ansible role creates testfiles and scans. Edit accordingly... (the test_files.yml is in vars/)
 <li> ...You can for instance, test the +i immutable attribute by editing the file attribute.
+<li> If firewalld is detected and running the default behaviour is to add http/https to the default zone (usually zone: public).
+<li> Remi-EL8 php8 is setup on EL8 hosts (Alma/Rocky 8.x).
 <br>
 <br>
 At the end of the ansible provision a summary message is printed.
 <br>
 <br>
+
+### Troubleshooting
+
+Sometimes the git clone is not downloaded correctly to the vagrant box. To sort this out, delete the clone and re-provision:
+
+<li> ```vagrant ssh```
+<li> ```sudo su -```
+<li> ```rm -rf /root/robinhood_git```
+<li> ```exit```
+<li> ```vagrant provision```
 
 ### SUSE specific notes
 

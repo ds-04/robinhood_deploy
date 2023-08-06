@@ -51,6 +51,11 @@
 - ansible.builtin.include: setup_robinhood_web.yml
   ignore_errors: "{{ ansible_check_mode }}"
 
+- ansible.builtin.include: firewalld.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+   - allow_firewalld_http_https | bool
+
 - ansible.builtin.include: robinhood_test_files_and_scan.yml
   ignore_errors: "{{ ansible_check_mode }}"
 

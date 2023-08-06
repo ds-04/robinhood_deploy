@@ -1,0 +1,36 @@
+---
+
+- block:
+
+   - name: Populate service facts to find firewalld
+     ansible.builtin.service_facts:
+
+  # set_fact when firewalld service found running
+   - name: Set fact firewalld_running
+     ansible.builtin.set_fact:
+      firewalld_running: true
+     when: 
+      - ansible_facts.services['firewalld.service'] is defined
+      - ansible_facts.services['firewalld.service'].state == 'running'
+
+   - name: permit traffic in default zone for http and https services
+     ansible.posix.firewalld:
+      service: "{{ item }}"
+      permanent: true
+      state: enabled
+     loop:
+      - http
+      - https
+     when: firewalld_running | bool
+     register: rule_change
+
+   - name: Reload firewall directly using command, if rule_change (http/https)
+     ansible.builtin.command:
+      argv:
+       - /usr/bin/firewall-cmd
+       - --reload
+     when: rule_change.changed | bool
+
+  become: true
+
+...

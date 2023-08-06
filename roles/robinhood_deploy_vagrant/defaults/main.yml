@@ -23,7 +23,6 @@ suse_zypper_update: false
 # git repo
 robinhood_git_repo: 'https://github.com/cea-hpc/robinhood.git'
 
-
 # where the git checkout will be
 clone_dest: '/root/robinhood_git'
 # where the rpms will get created
@@ -54,6 +53,9 @@ rh_mountpoint: '/robinhood_testfs'
 
 # Debian/SUSE ll alias
 ll_alias: true
+
+# firewalld - default zone
+allow_firewalld_http_https: true
 
 # nb_threads - conservative here
 thread_count: 4

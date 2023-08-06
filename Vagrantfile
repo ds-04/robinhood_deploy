@@ -10,8 +10,9 @@ VIMAGE = "almalinux/8"
 #VIMAGE = "centos/7"
 #VIMAGE = "opensuse/Leap-15.4.x86_64"
 #VIMAGE = "opensuse/Tumbleweed.x86_64"
+#VIMAGE = "generic/rocky8"
 
-# Won't work without more work
+# Not working right now
 #VIMAGE = "debian/bookworm64"
 #VIMAGE = "generic/ubuntu2204"
 
