@@ -12,11 +12,13 @@ doc_url_Policies: 'https://github.com/cea-hpc/robinhood/wiki/robinhood_v3_admin_
 #  !!! ********** ALL OS TYPES (NOT SUSE) - DOWNLOAD AND INSTALL RPM - FALSE FOR COMPILE ************** !!!
 robinhood_download_rpm_install: true
 
+# do a full update
+full_package_update: false
+
 # SUSE specific
 # default use zypper package don't compile
 suse_zypper_robinhood_install: true
-# do a full zypper update
-suse_zypper_update: false
+
 
 ### *** COMPILE *** ------------------------------------------------------------------------------------------
 
@@ -102,11 +104,10 @@ All_download_rpms:
 
 # ----------------------- DEPS AND SOURCE --------------------------------------------------------------------
 
-# needs moved, need git sooner
 common_pkg:
   - git
-  - tree
-  - vim
+  - tree #optional
+  - vim #optional
 
 rhel_depends:
   - autoconf

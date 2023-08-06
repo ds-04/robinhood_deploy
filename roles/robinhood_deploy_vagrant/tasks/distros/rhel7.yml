@@ -8,7 +8,13 @@
       state: present
       update_cache: true
 
-   - name: "RHEL7 - Install robinhood dependencies"
+   - name: "RHEL7 Update all packages"
+     ansible.builtin.yum:
+      name: '*'
+      state: latest
+     when: full_package_update | bool
+
+   - name: "RHEL Common - Install robinhood dependencies"
      ansible.builtin.yum:
       name: "{{ rhel_depends }}"
       state: present

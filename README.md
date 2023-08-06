@@ -93,11 +93,11 @@ At the end of the ansible provision a summary message is printed.
 
 Sometimes the git clone is not downloaded correctly to the vagrant box. To sort this out, delete the clone and re-provision:
 
-<li> ```vagrant ssh```
-<li> ```sudo su -```
-<li> ```rm -rf /root/robinhood_git```
-<li> ```exit```
-<li> ```vagrant provision```
+<li> vagrant ssh
+<li> sudo su -
+<li> rm -rf /root/robinhood_git
+<li> exit
+<li> vagrant provision
 
 ### SUSE specific notes
 

@@ -1,11 +1,11 @@
 ---
 - block:
 
-   - name: SUSE Update all packages
+   - name: "SUSE Update all packages"
      ansible.builtin.zypper:
       name: '*'
       state: latest
-     when: suse_zypper_update | bool
+     when: full_package_update | bool
 
    - name: "SUSE - Install robinhood dependencies"
      ansible.builtin.zypper:
