@@ -5,6 +5,14 @@ Ansible playbook and role to deploy Robinhood policy engine for testing in a Vag
 
 ```diff
 
+IMPORTANT NOTE:
+
+- This role requires ansible-galaxy collection community.general on the ansible controller host
+- To install:    ansible-galaxy collection install community.general
+- To check:      ansible-galaxy collection list | grep  community.general
+
+LATEST:
+
 - initial version
 - not secure, ephemeral, for testing
 - currently installs to vagrantbox
