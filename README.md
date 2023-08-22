@@ -16,6 +16,7 @@ LATEST:
 - initial version
 - not secure, ephemeral, for testing
 - currently installs to vagrantbox
+- now won't overwrite policy file if changes are made on vagrantbox, ansible will only write cfg files (vagrant_test.conf and vagrant_test_policy.inc) if they don't exist
 
 ```
 
@@ -59,9 +60,10 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 <br>
 
 ### Requirements:
+<li>Ansible.
+<li>ansible-galaxy collection community.general is used to make the testing filesystem, so you need this on the ansible controller
 <li>Vagrant with a provider such as Virtualbox ready.
 <li>Something like 100GB free to ensure you can comfortably host the Vagrantbox.
-<li>Ansible.
 
 
 <br>
@@ -89,6 +91,7 @@ The ```Vagrantfile``` used here (with ability to include 2nd disk) is based upon
 <li> The secondary disk is formatted ext4 as this is the quickest method accross the Vagrantboxes in the table seen (as some do not have XFS support on first instantiation and require package plus reboot).
 <li> The ansible role creates testfiles and scans. Edit accordingly... (the test_files.yml is in vars/)
 <li> ...You can for instance, test the +i immutable attribute by editing the file attribute.
+<li> If policy files are present the ansible doesn't overwrite (vagrant_test.conf and vagrant_test_policy.inc), this avoids the local testing changes being lost. Though be sure to capture them before you destroy the Vagrantbox!
 <li> If firewalld is detected and running the default behaviour is to add http/https to the default zone (usually zone: public).
 <li> Remi-EL8 php8 is setup on EL8 hosts (Alma/Rocky 8.x).
 <br>
