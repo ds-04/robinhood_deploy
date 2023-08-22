@@ -111,6 +111,22 @@ If you want to re-run the ansible (most likely to recreate files quickly and sca
 
 ...And of course ```vagrant destroy``` when you are done will remove the test vagrant vm. This will destroy [everything] asscociated with the VM and this could be your newly developed/tested policy files etc too unless you have safeguarded those!
 
+#### How to run policy only
+
+In this test environ the policy only can be run (explicity) with:
+
+``` robinhood --run=cleanup --once ```  - run policy named <i>cleanup</i>, which is configured here.
+
+or 
+
+``` robinhood --run --once ``` would run all policies that you have defined.
+
+Decisions will be made based upon the latest scan data available.
+
+Actions can be seen in:
+
+``` /var/log ``` ```robinhood_actions.log```
+
 
 ### Troubleshooting
 
