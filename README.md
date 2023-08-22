@@ -116,7 +116,7 @@ vagrant provision
 ### Useful policy rule conditions (1d here arbitrary and for example)
 
 - ``` condition { last_mod > 1d } ```
-- ``` condition { last_access > 1d } ``` which is max(atime, mtime) unless the global configuration last_access_only_atime is set, in which case it is exactly the atime
+- ``` condition { last_access > 1d } ``` which is max(atime, mtime) unless the global configuration ```last_access_only_atime``` is set, in which case it is exactly the ```atime```
 - ``` condition { creation > 1d } ```
 
 
