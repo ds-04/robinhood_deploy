@@ -101,6 +101,17 @@ At the end of the ansible provision a summary message is printed.
 <br>
 <br>
 
+### How to run
+
+Decide which Vagrant box you want to use by editing the ```VIMAGE``` variable in the supplied ```Vagrantfile```.
+
+Then use ```vagrant up``` to instantiate. The first run will do a Vagrant provison (using ansible) and set everything up.
+
+If you want to re-run the ansible (most likely to recreate files quickly and scan) then do ```vagrant provision```.
+
+...And of course ```Vagrant destroy``` when you are done will remove the test vagrant vm.
+
+
 ### Troubleshooting
 
 Sometimes the git clone is not downloaded correctly to the vagrant box. To sort this out, delete the clone and re-provision:
@@ -125,12 +136,3 @@ vagrant provision
 By default the Robinhood packages will be installed from <i>Zypper</i> OS repos. If you don't want that, set variable ```suse_zypper_robinhood_install: false```   (e.g. in ```vars/main.yml```) to compile.
 <br>
 <br>
-### How to run:
-
-Decide which Vagrant box you want to use by editing the ```VIMAGE``` variable in the supplied ```Vagrantfile```.
-
-Then use ```vagrant up``` to instantiate. The first run will do a Vagrant provison (using ansible) and set everything up.
-
-If you want to re-run the ansible (most likely to recreate files quickly and scan) then do ```vagrant provision```.
-
-...And of course ```Vagrant destroy``` when you are done will remove the test vagrant vm.
