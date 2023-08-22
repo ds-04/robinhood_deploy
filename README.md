@@ -109,7 +109,7 @@ Then use ```vagrant up``` to instantiate. The first run will do a Vagrant provis
 
 If you want to re-run the ansible (most likely to recreate files quickly and scan) then do ```vagrant provision```.
 
-...And of course ```Vagrant destroy``` when you are done will remove the test vagrant vm.
+...And of course ```vagrant destroy``` when you are done will remove the test vagrant vm. This will destroy [everything] asscociated with the VM and this could be your newly developed/tested policy files etc too unless you have safeguarded those!
 
 
 ### Troubleshooting
