@@ -86,7 +86,7 @@
       mode: '0600'
       backup: true
 
-   - name: "Template out vagrant_test.conf to /etc/robinhood.d/"
+   - name: "If not existing - Template out vagrant_test.conf to /etc/robinhood.d/"
      ansible.builtin.template:
       src: "vagrant_test.conf.j2"
       dest: "/etc/robinhood.d/vagrant_test.conf"
@@ -94,6 +94,7 @@
       group: root
       mode: '0700'
       backup: true
+      force: false
      register: config_main
 
    # needed for optional but default fileclass loop in example policy
@@ -102,7 +103,7 @@
       dir: vars
       files_matching: test_files.yml
 
-   - name: "Template out vagrant_test_policy.inc to /etc/robinhood.d/"
+   - name: "If not existing - Template out vagrant_test_policy.inc to /etc/robinhood.d/ (also run validation --test-syntax)"
      ansible.builtin.template:
       src: "vagrant_test_policy.inc.j2"
       dest: "/etc/robinhood.d/vagrant_test_policy.inc"
@@ -110,6 +111,8 @@
       group: root
       mode: '0700'
       backup: true
+      force: false
+      validate: robinhood --test-syntax %s
      register: config_policy
 
    - name: Make sure robinhood service unit is restarted (if config updated)
