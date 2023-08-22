@@ -113,6 +113,13 @@ exit
 vagrant provision
 ```
 
+### Useful policy rule conditions (1d here arbitrary and for example)
+
+- ``` condition { last_mod > 1d } ```
+- ``` condition { last_access > 1d } ``` which is max(atime, mtime) unless the global configuration last_access_only_atime is set, in which case it is exactly the atime
+- ``` condition { creation > 1d } ```
+
+
 ### SUSE specific notes
 
 By default the Robinhood packages will be installed from <i>Zypper</i> OS repos. If you don't want that, set variable ```suse_zypper_robinhood_install: false```   (e.g. in ```vars/main.yml```) to compile.
