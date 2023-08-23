@@ -103,7 +103,7 @@
       dir: vars
       files_matching: test_files.yml
 
-   - name: "If not existing - Template out vagrant_test_policy.inc to /etc/robinhood.d/ (also run validation --test-syntax)"
+   - name: "If not existing - Template out vagrant_test_policy.inc to /etc/robinhood.d/"
      ansible.builtin.template:
       src: "vagrant_test_policy.inc.j2"
       dest: "/etc/robinhood.d/vagrant_test_policy.inc"
@@ -115,7 +115,7 @@
       #validate: robinhood --test-syntax %s
      register: config_policy
 
-   - name: "run robinhood validation, robinhood --test-syntax)"
+   - name: "run robinhood validation, robinhood --test-syntax"
      ansible.builtin.command: robinhood --test-syntax
      ignore_errors: true
 
