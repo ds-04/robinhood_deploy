@@ -1,0 +1,46 @@
+---
+
+- name: Register stat for /usr/sbin/robinhood
+  ansible.builtin.stat:
+    path: /usr/sbin/robinhood
+  register: robinhood_bin_stat
+  ignore_errors: true
+
+- name: Insert vim config into /root/.vimrc
+  ansible.builtin.blockinfile:
+    path: /root/.rh_alias
+    create: true
+    owner: root
+    group: root
+    mode: 0400
+    block: |
+      set shiftwidth=4
+      set tabstop=4
+      syntax on
+      filetype on
+      filetype plugin on
+      filetype indent on
+      set cursorline
+      set cursorcolumn
+  become: true
+
+- name: Insert aliases into /root/.rh_alias
+  ansible.builtin.blockinfile:
+    path: /root/.rh_alias
+    create: true
+    owner: root
+    group: root
+    mode: 0400
+    block: |
+      alias rh_scan_once="echo \"robinhood --scan --once\" && robinhood --scan --once"
+      alias rh_run_once="echo \"robinhood --run --once\" && robinhood --run --once"
+      alias rh_syntax="echo \"robinhood --test-syntax\" && robinhood --test-syntax"
+  become: true
+      
+- name: root user .bashrc source /root/.rh_alias
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    line: source /root/.rh_alias
+  become: true
+
+...

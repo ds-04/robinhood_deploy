@@ -1,5 +1,8 @@
 ---
 
+# aliases to save time
+- ansible.builtin.include: rh_env.yml
+
 # git/tree/vim etc. alias
 - ansible.builtin.include: misc_robinhood.yml
 
@@ -9,11 +12,13 @@
    - ansible_os_family == "RedHat"
    - ansible_distribution_major_version|int == 7
 
+
 - ansible.builtin.include: distros/rhel8.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_os_family == "RedHat"
    - ansible_distribution_major_version|int == 8
+
 
 - ansible.builtin.include: distros/debian.yml
   ignore_errors: "{{ ansible_check_mode }}"
@@ -21,16 +26,19 @@
    - ansible_distribution_major_version|int == 12
    - ansible_distribution == "Debian"
 
+
 - ansible.builtin.include: distros/ubuntu2204.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_distribution_major_version|int == 22
    - ansible_distribution == 'Ubuntu'
 
+
 - ansible.builtin.include: distros/suse.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - ansible_os_family == "Suse"
+
 
 # sourceforge rpms
 - ansible.builtin.include: download_rpms.yml
@@ -39,11 +47,13 @@
    - ansible_os_family != "Suse"
    - robinhood_download_rpm_install | bool
 
+
 # compile
 - ansible.builtin.include: compile_robinhood.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
    - not robinhood_download_rpm_install | bool
+
 
 - ansible.builtin.include: setup_robinhood_localfs_db.yml
   ignore_errors: "{{ ansible_check_mode }}"
