@@ -79,9 +79,10 @@ FileClass f{{ value.file_number }} {
 #### Deleting old unused files #######
 
 {{ test_policy_name }}_rules {
-    #ignore
     #ignore { last_mod < 1d }
-    ignore_fileclass = empty_files;
+    #ignore_fileclass = empty_files;
+    #don't process entries in the namespace tree under {{ rh_mountpoint }}/lost+found
+    ignore { tree == "{{ rh_mountpoint }}/lost+found }
 
     rule clean_f {
         #target_fileclass = f2;
