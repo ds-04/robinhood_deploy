@@ -112,8 +112,12 @@
       mode: '0700'
       backup: true
       force: false
-      validate: robinhood --test-syntax %s
+      #validate: robinhood --test-syntax %s
      register: config_policy
+
+   - name: "run robinhood validation, robinhood --test-syntax)"
+     ansible.builtin.command: robinhood --test-syntax
+     ignore_errors: true
 
    - name: Make sure robinhood service unit is restarted (if config updated)
      ansible.builtin.systemd:
