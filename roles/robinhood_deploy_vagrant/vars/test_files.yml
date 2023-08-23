@@ -1,36 +1,90 @@
 ---
 
-# ----------------------- TEST FILES -------------------------------------------------------------------------
+ansible_created_test_dirs:
+    rh_test_dir1:
+      dir_number: 1
+      path: "{{ rh_mountpoint}}/rh_test_dir1_now_empty"
+      modification_time: now
+      state: directory
+      attributes: ''
+    rh_test_dir2:
+      dir_number: 2
+      path: "{{ rh_mountpoint}}/rh_test_dir2_2000_empty"
+      modification_time: 200001011200.00
+      state: directory
+      attributes: ''
 
+# ----------------------- TEST FILES -------------------------------------------------------------------------
 # N.B. YYYYMMDDHHMM.SS for modification_time
 ansible_created_test_files:
     rh_test_file1:
       file_number: 1
-      path: "{{ rh_mountpoint}}/rh_test_file1"
+      path: "{{ rh_mountpoint}}/rh_test_file1_immutable_500M"
       modification_time: now
       state: touch
-      size: 1G
-      attributes: ''
+      size: 500M
+      attributes: '+1'
     rh_test_file2:
       file_number: 2
-      path: "{{ rh_mountpoint}}/rh_test_file2"
+      path: "{{ rh_mountpoint}}/rh_test_file2_immutable_250M"
       modification_time: 200001011200.00
       state: touch
-      size: 500M
+      size: 250M
       attributes: '+i'
     rh_test_file3:
       file_number: 3
-      path: "{{ rh_mountpoint}}/rh_test_file3"
-      modification_time: 202301011200.00
+      path: "{{ rh_mountpoint}}/rh_test_file3_now_1M"
+      modification_time: now
       state: touch
       size: 1M
       attributes: ''
     rh_test_file4:
       file_number: 4
-      path: "{{ rh_mountpoint}}/rh_test_file4"
-      modification_time: now
+      path: "{{ rh_mountpoint}}/rh_test_file4_2023_1k"
+      modification_time: 202301011200.00
       state: touch
       size: 1K
       attributes: ''
-
+    rh_test_file5:
+      file_number: 5
+      path: "{{ rh_mountpoint}}/rh_test_file5_2022_1k"
+      modification_time: 202201011200.00
+      state: touch
+      size: 1K
+      attributes: ''
+    rh_test_file6:
+      file_number: 6
+      path: "{{ rh_mountpoint}}/rh_test_file6_2021_1k"
+      modification_time: 202101011200.00
+      state: touch
+      size: 1K
+      attributes: ''
+    rh_test_file7:
+      file_number: 7
+      path: "{{ rh_mountpoint}}/rh_test_file7_2000_1k"
+      modification_time: 200001011200.00
+      state: touch
+      size: 1K
+      attributes: ''
+    rh_test_file8:
+      file_number: 8
+      path: "{{ rh_mountpoint}}/rh_test_file8_2000_1k"
+      modification_time: 200001011200.00
+      state: touch
+      size: 1K
+      attributes: ''     
+    rh_test_file9:
+      file_number: 9
+      path: "{{ rh_mountpoint}}/rh_test_file9_2000_1k"
+      modification_time: 200001011200.00
+      state: touch
+      size: 1K
+      attributes: ''
+    rh_test_file10:
+      file_number: 10
+      path: "{{ rh_mountpoint}}/rh_test_file10_2000_1k"
+      modification_time: 200001011200.00
+      state: touch
+      size: 1K
+      attributes: ''  
 ...

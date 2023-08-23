@@ -9,18 +9,6 @@
 # {{ doc_url_Policies }}
 
 
-
-#### policy definitions ####
-
-# includes go here
-
-define_policy {{ test_policy_name }} {
-     status_manager = basic;
-     scope { type == file }
-     default_action = common.log;
-     default_lru_sort_attr = none;
-}
-
 #### fileclass definitions ####
 
 FileClass even_files {
@@ -49,74 +37,113 @@ FileClass std_files {
 FileClass big_files {
     definition { type == file and size > 1GB }
 }
-
 FileClass largedir {
     definition { type == directory and dircount > 10000 }
 }
 
 
-
-
-
-# TESTING EXAMPLES based on name (by hand)
-
-#FileClass f1 {
-#    definition { type == file and name == "rh_test_file1" }
-#}
-
-# TESTING EXAMPLES based on name - generated from items in the ansible dictionary found in defaults
-{% for key, value in ansible_created_test_files.items() %}
-FileClass f{{ value.file_number }} {
-    definition { type == file and name == "{{ key }}" }
+#empty dirs
+Fileclass empty_dir {
+    definition { type == directory and dircount == 0 }
 }
-{% endfor %}
 
 
 
 
-
-
+#### policy A definition ####
 #### Deleting old unused files #######
 
-{{ test_policy_name }}_rules {
+define_policy cleanup_files {
+     status_manager = none;
+     scope { type == file }
+     # always log
+     default_action = common.log;
+     default_lru_sort_attr = none;
+}
+
+
+cleanup_files_rules {
     #ignore { last_mod < 1d }
     #ignore_fileclass = empty_files;
     #don't process entries in the namespace tree
     ignore { tree == "/robinhood_testfs/lost+found" }
 
-    rule clean_f {
-        #target_fileclass = f2;
+    rule cleanup_files_unlink_file {
         target_fileclass = small_files;
         target_fileclass = std_files;
         target_fileclass = big_files;
-        #target_fileclass = largedir;
         condition { last_mod > 1d }
         action = common.unlink;
     }
 
     # DEFAULT rule for other entries
     rule default {
-        condition { last_mod < 1d }
-        action = common.log;
+    condition { last_mod < 1d }
+    action = none;
     }
 }
 
-{{ test_policy_name }}_parameters {
+cleanup_files_parameters {
     lru_sort_attr = none;
 }
 
-{{ test_policy_name }}_trigger {
+cleanup_files_trigger {
     trigger_on = periodic;
     check_interval = 1m;
 }
 
+
+#### policy B definition ####
+#### Deleting old unused empty directories #######
+
+define_policy cleanup_empty_dirs {
+     status_manager = none;
+     scope { type == directory }
+     # always log
+     default_action = common.log;
+     default_lru_sort_attr = none;
+}
+
+cleanup_empty_dirs_rules {
+    #don't process entries in the namespace tree
+    ignore { tree == "/robinhood_testfs/lost+found" }
+
+    # remove empty directories after 30d
+    rule rmdir_empty {
+    target_fileclass = empty_dir;
+    action = common.rmdir;
+    condition { last_mod > 30d }
+    }
+
+    # DEFAULT rule for other entries
+    rule default {
+    condition { last_mod < 30d }
+    action = none;
+    }
+}
+
+cleanup_empty_dirs_parameters {
+    lru_sort_attr = none;
+}
+
+cleanup_empty_dirs_trigger {
+    trigger_on = periodic;
+    check_interval = 1m;
+}
+
+
+########### end of policy rules ############
+
+
+
+
+
+
 # OTHER
 # clean when inode count > 100M
-#{{ test_policy_name }}_trigger {
+# some_name_trigger {
 #    trigger_on = global_usage;
 #    high_threshold_cnt = 100M;
 #    low_threshold_cnt  = 100M;
 #    check_interval     = 5min;
 #}
-
-########### end of policy rules ############

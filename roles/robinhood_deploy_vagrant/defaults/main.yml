@@ -69,8 +69,6 @@ ansible_create_test_files: true
 # run a report
 run_rbh_report_on_ansible_run: true
 
-test_policy_name: 'cleanup'
-
 
 # ----------------------- DOWNLOADED RPMS --------------------------------------------------------------------
 

@@ -7,6 +7,16 @@
       dir: vars
       files_matching: test_files.yml
 
+   - name: "Creation of empty directories in {{ rh_mountpoint }} IGNORING ERRORS"
+     ansible.builtin.file:
+      mode: '0777'
+      path: "{{ item.value.path }}"
+      state: "{{ item.value.state }}"
+      modification_time: "{{ item.value.modification_time }}"
+     loop: "{{ lookup('dict', ansible_created_test_dirs) }}"
+     ignore_errors: true
+     when: ansible_create_test_files | bool
+
    # ignore errors, though these warrant investigation
    - name: "Create some test files in {{ rh_mountpoint }} - ignore errors, though these warrant investigation"
      community.general.filesize:
@@ -56,13 +66,18 @@
        - "Run scan with:"
        - "robinhood --scan --once OR robinhood --scan --once --detach"
        - "-----------------------"
-       - "Run the test policy named {{ test_policy_name }} with:"
-       - "robinhood --run={{ test_policy_name }}"
+       - "Run ALL policies with:"
+       - "robinhood --run --once"
        - "-----------------------"
        - "Other commands:"
        - "rbh-report"
        - "rbh-du"
        - "rbh-find"
+       - "-----------------------"
+       - "Aliases for quick access:"
+       - "rh_scan_once"
+       - "rh_run_once"
+       - "rh_syntax"
        - "-----------------------"
        - "Web interface is seen at http://{{ansible_ssh_host}}/robinhood/#"
 
