@@ -2,17 +2,44 @@
 
 - block:
 
-   - name: Include only files matching test_files.yaml
+   - name: Include files matching test_users.yaml
+     ansible.builtin.include_vars:
+      dir: vars
+      files_matching: test_users.yml
+
+   - name: Include files matching test_files.yaml
      ansible.builtin.include_vars:
       dir: vars
       files_matching: test_files.yml
 
+   # create test users
+   - name: "Creation of test user's groups"
+     ansible.builtin.group:
+      name: "{{ item.value.group }}"
+      state: present
+     loop: "{{ lookup('dict', ansible_created_test_users) }}"
+     when: ansible_create_test_users | bool
+
+   # create test users
+   - name: "Creation of test users"
+     ansible.builtin.user:
+      name: "{{ item.value.name }}"
+      group: "{{ item.value.group }}"
+      comment: "{{ item.value.comment }}"
+      password: "{{ item.value.password }}"
+      shell: "{{ item.value.shell }}"
+     loop: "{{ lookup('dict', ansible_created_test_users) }}"
+     when: ansible_create_test_users | bool     
+
+   # create test dirs
    - name: "Creation of empty directories in {{ rh_mountpoint }} IGNORING ERRORS"
      ansible.builtin.file:
       mode: '0777'
       path: "{{ item.value.path }}"
       state: "{{ item.value.state }}"
       modification_time: "{{ item.value.modification_time }}"
+      owner: "{{ item.value.owner }}"
+      group: "{{ item.value.group }}"
      loop: "{{ lookup('dict', ansible_created_test_dirs) }}"
      ignore_errors: true
      when: ansible_create_test_files | bool
@@ -34,9 +61,15 @@
       path: "{{ item.value.path }}"
       state: "{{ item.value.state }}"
       modification_time: "{{ item.value.modification_time }}"
+      owner: "{{ item.value.owner }}"
+      group: "{{ item.value.group }}"
      loop: "{{ lookup('dict', ansible_created_test_files) }}"
      ignore_errors: true
      when: ansible_create_test_files | bool
+
+   - name: "run robinhood validation, robinhood --test-syntax"
+     ansible.builtin.command: robinhood --test-syntax
+     ignore_errors: true
 
    # do a scan once, if requested
    - name: "Command - robinhood --scan --once; ***this may take some time...***"
