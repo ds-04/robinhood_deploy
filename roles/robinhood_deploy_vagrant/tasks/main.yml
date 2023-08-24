@@ -2,9 +2,14 @@
 
 # aliases to save time
 - ansible.builtin.include: rh_env.yml
+  tags: env
 
 # git/tree/vim etc. alias
 - ansible.builtin.include: misc_robinhood.yml
+  tags: misc
+
+- ansible.builtin.include: logrotate.yml
+  tags: logrotate
 
 - ansible.builtin.include: distros/rhel7.yml
   ignore_errors: "{{ ansible_check_mode }}"

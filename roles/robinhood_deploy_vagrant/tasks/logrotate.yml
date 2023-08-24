@@ -1,0 +1,22 @@
+---
+
+- block:
+
+   - name: Install logrotate package
+     ansible.builtin.dnf:
+      name: logrotate
+      state: present
+      update_cache: true
+
+   - name: "Template out /etc/logrotate.d/robinhood"
+     ansible.builtin.template:
+      src: robinhood_logrotate.j2
+      dest: /etc/logrotate.d/robinhood
+      owner: root
+      group: root
+      mode: '0644'
+      backup: true
+
+  become: true
+
+...
