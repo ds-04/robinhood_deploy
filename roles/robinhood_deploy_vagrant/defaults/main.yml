@@ -64,6 +64,8 @@ thread_count: 4
 
 # robinhood --scan --once --detach
 run_scan_on_ansible_run: true
+# create test users via ansible
+ansible_create_test_users: true
 # create test files via ansible
 ansible_create_test_files: true
 # run a report

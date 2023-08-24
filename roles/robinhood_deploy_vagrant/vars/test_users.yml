@@ -1,0 +1,21 @@
+---
+
+# ----------------------- TEST USERS --------------------------------------------------------------------------
+
+ansible_created_test_users:
+    rh_test_user1:
+      user_number: 1
+      name: 'rh_user1'
+      group: 'rh_user1'
+      comment: 'rh_user1'
+      password: 'rh_user1'
+      shell: '/bin/bash'
+    rh_test_user2:
+      user_number: 2
+      name: 'rh_user2'
+      group: 'rh_user2'
+      comment: 'rh_user2'
+      password: 'rh_user2'
+      shell: '/bin/bash'
+
+...
