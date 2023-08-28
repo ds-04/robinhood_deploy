@@ -1,9 +1,12 @@
 /var/log/robinhood_actions.log {
         create 600 root root
-        daily
-        rotate 3
+        rotate {{ logrotate_count }}
+        #use size 1k - always rotate if content found
+        size 1k
+        dateext
+        dateformat -%Y%m%d-%H%M-%s
         missingok
+        ifempty
         compress
         copytruncate
 }
-

@@ -5,7 +5,8 @@ doc_url_main: 'https://github.com/cea-hpc/robinhood/wiki/robinhood_v3_admin_doc'
 doc_url_Fileclasses: 'https://github.com/cea-hpc/robinhood/wiki/robinhood_v3_admin_doc#user-content-Fileclasses'
 doc_url_Policies: 'https://github.com/cea-hpc/robinhood/wiki/robinhood_v3_admin_doc#user-content-Policies'
 
-
+# Timezone - set your timezone
+timezone: 'Europe/London'
 
 ### *** PACKAGE INSTALL *** ----------------------------------------------------------------------------------
 
@@ -58,6 +59,9 @@ ll_alias: true
 
 # firewalld - default zone
 allow_firewalld_http_https: true
+
+# number of rotatation to permit in logrotate - "rotate n" - here we set high to avoid removal - 3650 would be 10 actions a day per year
+logrotate_count: 3650
 
 # nb_threads - conservative here
 thread_count: 4

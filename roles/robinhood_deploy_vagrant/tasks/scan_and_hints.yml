@@ -1,0 +1,55 @@
+---
+
+- block:
+
+   - name: "run robinhood validation, robinhood --test-syntax"
+     ansible.builtin.command: robinhood --test-syntax
+     ignore_errors: true
+
+   # do a scan once, if requested
+   - name: "Command - robinhood --scan --once; ***this may take some time...***"
+     ansible.builtin.shell:
+      cmd: "robinhood --scan --once"
+     when: run_scan_on_ansible_run | bool
+
+   # run rbh-report, if requested
+   - name: "Commands - run df and rbh-report commands"
+     ansible.builtin.shell:
+      cmd: "{{ item }}"
+     when: run_rbh_report_on_ansible_run | bool
+     register: rbh_report_out
+     loop:
+      - "df -hT {{ rh_mountpoint }}"
+      - "rbh-report -a"
+      - "rbh-report --classinfo"
+
+   - name: "Show summary commands outputs"
+     ansible.builtin.debug:
+      msg: "{{ item.stdout_lines }}"
+     loop: "{{ rbh_report_out.results }}"
+
+   - name: "Show hints"
+     ansible.builtin.debug:
+      msg:
+       - "Run scan with:"
+       - "robinhood --scan --once OR robinhood --scan --once --detach"
+       - "-----------------------"
+       - "Run ALL policies with:"
+       - "robinhood --run --once"
+       - "-----------------------"
+       - "Other commands:"
+       - "rbh-report"
+       - "rbh-du"
+       - "rbh-find"
+       - "-----------------------"
+       - "Aliases for quick access:"
+       - "rh_scan_once            (scan once)"
+       - "rh_run_once             (run policies once)"
+       - "rh_run_once_and_rotate  (run policies once AND logrotate"
+       - "rh_syntax               (check config syntax)"  
+       - "-----------------------"
+       - "Web interface is seen at http://{{ansible_ssh_host}}/robinhood/#"
+
+  become: true
+
+...
